@@ -62,22 +62,21 @@ class GameObject:
 class Apple(GameObject):
     """Класс, описывающий яблоко."""
 
-    def __init__(self, body_color=APPLE_COLOR, snake_positions=None):
+    def __init__(self, body_color=APPLE_COLOR, colored_cells=None):
         """Инициализирует яблоко в случайной позиции."""
         super().__init__(body_color=body_color)
-        if snake_positions is None:
-            snake_positions = []
-        self.randomize_position(snake_positions)
+        if colored_cells is None:
+            colored_cells = []
+        self.randomize_position(colored_cells)
 
-    def randomize_position(self, snake_positions):
+    def randomize_position(self, colored_cells):
         """Назначает случайную позицию яблока."""
         while True:
-            position = (
+            self.position = (
                 randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                 randint(0, GRID_HEIGHT - 1) * GRID_SIZE
             )
-            if position not in snake_positions:
-                self.position = position
+            if self.position not in colored_cells:
                 break
 
     def draw(self):
@@ -133,7 +132,7 @@ class Snake(GameObject):
         for position in self.positions[:-1]:
             self.draw_cell(position)
 
-        self.draw_cell(self.positions[0])
+        self.draw_cell(self.get_head_position())
 
         if self.last:
             last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
@@ -160,8 +159,8 @@ def handle_keys(game_object):
 def main():
     """Запускает основной игровой цикл."""
     pygame.init()
-    snake = Snake(GRID_CENTRE, SNAKE_COLOR)
-    apple = Apple(APPLE_COLOR, snake.positions)
+    snake = Snake()
+    apple = Apple(colored_cells=snake.positions)
 
     while True:
         clock.tick(SPEED)
